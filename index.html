@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>London Tipping Copy Editor</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #fff700;
+      color: #000;
+    }
+
+    #passwordScreen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100vh;
+      background: green;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+    }
+
+    .password-box {
+      background: #fff700;
+      padding: 40px 30px;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      text-align: center;
+      width: 300px;
+    }
+
+    .password-box h2 {
+      margin-bottom: 20px;
+      font-size: 22px;
+      color: white;
+    }
+
+    .password-box input {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      font-size: 16px;
+      outline: none;
+      text-align: center;
+    }
+
+    .password-box button {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      background: green;
+      color: white;
+      font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .password-box button:hover {
+      filter: brightness(1.2);
+    }
+
+    #protectedContent {
+      display: none;
+    }
+
+    .overlay {
+      background-color: rgba(255, 255, 255, 0.95);
+      min-height: 100vh;
+      padding: 40px 20px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+      background-color: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    h2 {
+      text-align: center;
+      font-size: 28px;
+      margin-bottom: 20px;
+      background-color: green;
+      color: white;
+      padding: 10px;
+      border-radius: 8px;
+    }
+
+    h2 span:first-child {
+      color: #fff700;
+    }
+
+    h2 span:nth-child(2) {
+      color: #ffffff;
+    }
+
+    textarea {
+      width: 100%;
+      height: 250px;
+      padding: 15px;
+      font-size: 15px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      resize: vertical;
+      background: #fff;
+      color: #000;
+    }
+
+    .controls {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      margin-top: 15px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 14px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      background-color: green;
+      margin-top: 10px;
+      color: white;
+      transition: 0.3s ease;
+    }
+
+    .toggle {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      margin-top: 10px;
+    }
+
+    #output {
+      white-space: pre-wrap;
+      background: #f9f9f9;
+      padding: 20px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      margin-top: 25px;
+      font-size: 16px;
+      min-height: 150px;
+      color: #000;
+    }
+
+    strong {
+      background-color: green;
+      color: white;
+      padding: 2px 5px;
+      border-radius: 3px;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      color: #555;
+      font-size: 14px;
+    }
+
+    @media (max-width: 600px) {
+      .controls {
+        flex-direction: column;
+        gap: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div id="passwordScreen">
+  <div class="password-box">
+    <h2>🔒 Enter Password</h2>
+    <input type="password" id="passwordInput" placeholder="Enter password" />
+    <button onclick="checkPassword()">Unlock</button>
+  </div>
+</div>
+
+<div id="protectedContent">
+  <div class="overlay">
+    <div class="container">
+      <h2><span>London</span> <span>Tipping Copy Editor</span></h2>
+
+      <textarea id="inputText" placeholder="Paste the full Article including SELECTIONS..."></textarea>
+
+      <div class="controls">
+        <button onclick="processText()">✨ Process</button>
+        <button onclick="clearText()">🧹 Clear</button>
+        <div class="toggle">
+          <input type="checkbox" id="highlightAll">
+          <label for="highlightAll">Highlight all matches</label>
+        </div>
+      </div>
+
+      <div id="output"></div>
+    </div>
+
+    <footer>
+      Made by <strong>Charith Neranga</strong> – All rights reserved © 2025
+    </footer>
+  </div>
+</div>
+
+<script>
+  document.getElementById("passwordInput").addEventListener("keydown", function (event) {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      checkPassword();
+    }
+  });
+
+  function checkPassword() {
+    const correctPassword = "1234";
+    const input = document.getElementById("passwordInput").value;
+    if (input === correctPassword) {
+      document.getElementById("passwordScreen").style.display = "none";
+      document.getElementById("protectedContent").style.display = "block";
+    } else {
+      alert("❌ Incorrect password. Try again.");
+    }
+  }
+
+  function escapeRegex(str) {
+    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+
+  function processText() {
+    const input = document.getElementById('inputText').value;
+    const outputDiv = document.getElementById('output');
+    const highlightAll = document.getElementById('highlightAll').checked;
+
+    const selectionsMatch = input.match(/SELECTIONS\s*([\s\S]*)/i);
+    if (!selectionsMatch) {
+      outputDiv.innerHTML = "<span style='color:red;'>❌ SELECTIONS section not found.</span>";
+      return;
+    }
+
+    const selectionText = selectionsMatch[1];
+    const horseRegex = /\d{1,2}\.\d{2}\s+([^\n\r,]+)/g;
+
+    let horseNames = [];
+    let match;
+    while ((match = horseRegex.exec(selectionText)) !== null) {
+      let name = match[1].trim().replace(/[.,!?]+$/, '');
+      if (name.length > 0) {
+        horseNames.push(name);
+      }
+    }
+
+    if (horseNames.length === 0) {
+      outputDiv.innerHTML = "<span style='color:red;'>❌ No horse names found in SELECTIONS.</span>";
+      return;
+    }
+
+    horseNames.sort((a, b) => b.length - a.length);
+
+    let outputText = input;
+
+    horseNames.forEach(name => {
+      const escapedName = escapeRegex(name);
+      const regex = new RegExp(`(?<!<strong[^>]*?>)(\\b${escapedName}\\b)(?=[\\s.,;!?'")]|$)`, highlightAll ? 'gi' : 'i');
+      outputText = outputText.replace(regex, match => `<strong>${match}</strong>`);
+    });
+
+    outputDiv.innerHTML = outputText;
+  }
+
+  function clearText() {
+    document.getElementById('inputText').value = '';
+    document.getElementById('output').innerHTML = '';
+    document.getElementById('highlightAll').checked = false;
+  }
+</script>
+
+</body>
+</html>
